@@ -40,7 +40,7 @@ public class ItemsController : ControllerBase
         var inventoryItemEntities = await _inventoryItemsRepository.GetAllAsync(item => item.UserId == userId );
         // collecting itemsIDs from inventory items 
         var itemIds = inventoryItemEntities.Select(item => item.CatalogItemID);
-        // we have catalog items that match the ID in the ineventory items 
+        // we have catalog items that match the ID in the inventory items 
         var catalogItemEntities = await _catalogItemsRepository
                                 .GetAllAsync( item => itemIds.Contains(item.Id));
         

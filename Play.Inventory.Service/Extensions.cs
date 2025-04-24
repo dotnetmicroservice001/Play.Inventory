@@ -8,6 +8,6 @@ public static class Extensions
 {
     public static InventoryItemsDto AsDto(this InventoryItem item, string name, string description)
     {
-        return new InventoryItemsDto(item.CatalogItemID, item.Quantity, name, description, item.AcquiredDate);
+        return new InventoryItemsDto(item.CatalogItemID, name, item.Quantity, description, item.AcquiredDate);
     }
 }
