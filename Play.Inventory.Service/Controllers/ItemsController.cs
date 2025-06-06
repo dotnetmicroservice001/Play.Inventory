@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Play.Common;
 using Play.Inventory.Service.Clients;
 using Play.Inventory.Service.Entities;
@@ -13,9 +15,9 @@ namespace Play.Inventory.Service.Controllers;
 
 [ApiController]
 [Route("items")]
-[Authorize]
 public class ItemsController : ControllerBase
 {
+    private const string AdminRole = "Admin";
     private readonly IRepository<InventoryItem> _inventoryItemsRepository;
     private readonly IRepository<CatalogItem> _catalogItemsRepository;
    
@@ -28,12 +30,23 @@ public class ItemsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<InventoryItem>>> GetAsync(Guid userId)
     {
+        
         // if empty return bad request 
         if (userId == Guid.Empty)
         {
             return BadRequest();
+        }
+
+        var currentUserId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        if (Guid.Parse(currentUserId) != userId)
+        {
+            if (!User.IsInRole(AdminRole))
+            {
+                return Forbid();
+            }
         }
         
         // we're defining a filter for get all async which is userID 
@@ -57,6 +70,7 @@ public class ItemsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = AdminRole)]
     public async Task<ActionResult> PostAsync(GrantItemsDto grantItemsDto)
     {
          
