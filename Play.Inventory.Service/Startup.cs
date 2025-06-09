@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using GreenPipes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,7 @@ using Play.Common.MassTransit;
 using Play.Common.MongoDB;
 using Play.Inventory.Service.Clients;
 using Play.Inventory.Service.Entities;
+using Play.Inventory.Service.Exceptions;
 using Polly;
 using Polly.Timeout;
 
@@ -34,13 +36,17 @@ namespace Play.Inventory.Service
             services.AddMongo()
                 .AddMongoRepository<InventoryItem>("inventoryitems")
                 .AddMongoRepository<CatalogItem>("catalogitems")
-                .AddMassTransitWithRabbitMQ()
+                .AddMassTransitWithRabbitMQ(retryConfigurator =>
+                {
+                    retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
+                    
+                    // we want to say which exception does not need to be retried 
+                    // like the item not found exception
+                    retryConfigurator.Ignore(typeof(UnknownItemException));
+                })
                 .AddJwtBearer(); 
             
-            
-            
             AddCatalogClient(services);
-            
             
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -48,7 +54,6 @@ namespace Play.Inventory.Service
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Play.Inventory.Service", Version = "v1" });
             });
         }
-
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
