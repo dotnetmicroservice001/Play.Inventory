@@ -8,12 +8,12 @@ using Play.Inventory.Service.Exceptions;
 
 namespace Play.Inventory.Service.Consumer;
 
-public class SubtractItemConsumer : IConsumer
+public class SubtractItemsConsumer : IConsumer
 {
     private readonly IRepository<InventoryItem> _inventoryItemsRepository;
     private readonly IRepository<CatalogItem> _catalogItemsRepository;
 
-    public SubtractItemConsumer(IRepository<InventoryItem> inventoryItemsRepository,
+    public SubtractItemsConsumer(IRepository<InventoryItem> inventoryItemsRepository,
         IRepository<CatalogItem> catalogItemsRepository)
     {
         _inventoryItemsRepository = inventoryItemsRepository;
