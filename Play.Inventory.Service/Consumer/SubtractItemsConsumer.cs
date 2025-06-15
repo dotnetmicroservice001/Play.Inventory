@@ -40,7 +40,13 @@ public class SubtractItemsConsumer : IConsumer<SubtractItems>
         // if we dont have it, create a new message
         if (inventoryItem != null)
         {
+            if (inventoryItem.MessageIds.Contains(context.MessageId.Value))
+            {
+                await context.Publish(new InventoryItemsGranted(message.CorrelationId)); 
+                return;
+            }
             inventoryItem.Quantity -= message.Quantity;
+            inventoryItem.MessageIds.Add(context.MessageId.Value);
             await _inventoryItemsRepository.UpdateAsync(inventoryItem);
         }
         
