@@ -49,12 +49,19 @@ public class GrantItemsConsumer :IConsumer<GrantItems>
                 Quantity = message.Quantity,
                 AcquiredDate = DateTimeOffset.UtcNow
             }; 
+            inventoryItem.MessageIds.Add(context.MessageId.Value);
             await _inventoryItemsRepository.CreateAsync(inventoryItem);
         }
         else
         {
+            if (inventoryItem.MessageIds.Contains(context.MessageId.Value))
+            {
+                await context.Publish(new InventoryItemsGranted(message.CorrelationId)); 
+                return;
+            }
             // if we have it, increase the amt
             inventoryItem.Quantity += message.Quantity;
+            inventoryItem.MessageIds.Add(context.MessageId.Value);
             await _inventoryItemsRepository.UpdateAsync(inventoryItem);
         }
         // send an event that inventory item has been granted
