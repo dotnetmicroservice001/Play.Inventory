@@ -8,7 +8,7 @@ using Play.Inventory.Service.Exceptions;
 
 namespace Play.Inventory.Service.Consumer;
 
-public class SubtractItemsConsumer : IConsumer
+public class SubtractItemsConsumer : IConsumer<SubtractItems>
 {
     private readonly IRepository<InventoryItem> _inventoryItemsRepository;
     private readonly IRepository<CatalogItem> _catalogItemsRepository;
@@ -41,7 +41,7 @@ public class SubtractItemsConsumer : IConsumer
         if (inventoryItem != null)
         {
             inventoryItem.Quantity -= message.Quantity;
-            await _inventoryItemsRepository.CreateAsync(inventoryItem);
+            await _inventoryItemsRepository.UpdateAsync(inventoryItem);
         }
         
         // send an event that inventory item has been granted
