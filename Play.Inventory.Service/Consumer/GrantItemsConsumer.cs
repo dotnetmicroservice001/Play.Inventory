@@ -65,7 +65,15 @@ public class GrantItemsConsumer :IConsumer<GrantItems>
             await _inventoryItemsRepository.UpdateAsync(inventoryItem);
         }
         // send an event that inventory item has been granted
-        await context.Publish(new InventoryItemsGranted(message.CorrelationId)); 
+        var itemsGrantedTask = context.Publish(new InventoryItemsGranted(message.CorrelationId));
+        var inventoryUpdatedTask = context.Publish(new InventoryItemUpdated(
+            inventoryItem.UserId,
+            inventoryItem.CatalogItemID,
+            inventoryItem.Quantity
+        ));
+        
+        // start both tasks and wait for both of them to complete 
+        await Task.WhenAll(itemsGrantedTask, inventoryUpdatedTask);
     }
 }
 

@@ -48,6 +48,12 @@ public class SubtractItemsConsumer : IConsumer<SubtractItems>
             inventoryItem.Quantity -= message.Quantity;
             inventoryItem.MessageIds.Add(context.MessageId.Value);
             await _inventoryItemsRepository.UpdateAsync(inventoryItem);
+            
+            // publish inventory item is updated 
+            await context.Publish(new InventoryItemUpdated(
+                inventoryItem.UserId,
+                inventoryItem.CatalogItemID,
+                inventoryItem.Quantity));
         }
         
         // send an event that inventory item has been granted
