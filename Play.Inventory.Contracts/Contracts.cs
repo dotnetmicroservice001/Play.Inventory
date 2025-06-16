@@ -17,3 +17,9 @@ public record SubtractItems(Guid UserId,
     Guid CorrelationId);        
 
 public record InventoryItemsSubtracted(Guid CorrelationId);    
+
+public record InventoryItemUpdated(
+    Guid UserId,
+    Guid CatalogItemId,
+    int newTotalQuantity
+    );
