@@ -2,6 +2,10 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+        <Description>
+            Defines integration message contracts for the Inventory microservice in the Play Economy system.
+            Supports item grants, subtractions, and state updates for use in distributed messaging and sagas.
+        </Description>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>

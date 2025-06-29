@@ -2,7 +2,6 @@
 namespace Play.Inventory.Contracts;
 
 
-
 public record GrantItems(Guid UserId, 
                 Guid CatalogItemId,
                 int Quantity,
@@ -10,7 +9,7 @@ public record GrantItems(Guid UserId,
 
 public record InventoryItemsGranted(Guid CorrelationId);       
 
-//compensatory action for granting 
+//compensatory action in saga for granting items
 public record SubtractItems(Guid UserId, 
     Guid CatalogItemId,
     int Quantity,

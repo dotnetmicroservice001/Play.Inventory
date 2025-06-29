@@ -15,3 +15,19 @@ The Inventory microservice manages the **item inventory for each user** in the P
 - ASP.NET Core
 - RabbitMQ + MassTransit (event-driven communication)
 - OAuth 2.0 / OpenID Connect (Duende IdentityServer)
+
+
+## Creating and Publishing Package 
+```bash
+version="1.0.2"
+owner="dotnetmicroservice001"
+gh_pat="[YOUR_PERSONAL_ACCESS_TOKEN]"
+
+dotnet pack Play.Inventory.Contracts --configuration Release \
+  -p:PackageVersion="$version" \
+  -p:RepositoryUrl="https://github.com/$owner/Play.Inventory" \
+  -o ../Packages
+  
+dotnet nuget push ../Packages/Play.Inventory.Contracts.$version.nupkg --api-key $gh_pat \
+--source "github"
+```
