@@ -23,11 +23,23 @@ version="1.0.2"
 owner="dotnetmicroservice001"
 gh_pat="[YOUR_PERSONAL_ACCESS_TOKEN]"
 
-dotnet pack Play.Inventory.Contracts --configuration Release \
+dotnet pack src/Play.Inventory.Contracts --configuration Release \
   -p:PackageVersion="$version" \
   -p:RepositoryUrl="https://github.com/$owner/Play.Inventory" \
   -o ../Packages
   
 dotnet nuget push ../Packages/Play.Inventory.Contracts.$version.nupkg --api-key $gh_pat \
 --source "github"
+```
+
+## Build a Docker Image
+```bash
+export GH_OWNER=dotnetmicroservice001
+export GH_PAT="ghp_YourRealPATHere"
+docker build --secret id=GH_OWNER --secret id=GH_PAT -t play.inventory:$version .
+```
+
+## Run Docker Container
+```bash 
+docker run -it --rm -p 5004:5004 --name identity -e MongoDbSettings__Host=mongo -e RabbitMQSettings__Host=rabbitmq --network playinfra_default play.inventory:$version
 ```
