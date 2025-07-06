@@ -34,7 +34,7 @@ dotnet nuget push ../Packages/Play.Inventory.Contracts.$version.nupkg --api-key 
 
 ## Build a Docker Image
 ```bash
-export version="1.0.3"
+export version="1.0.4"
 export GH_OWNER=dotnetmicroservice001
 export GH_PAT="ghp_YourRealPATHere"
 export appname="playeconomy-01"
@@ -60,6 +60,21 @@ docker run -it --rm \
 ```bash 
 az acr login --name $acrname
 docker push "$acrname.azurecr.io/play.inventory:$version"
+```
+## 🐳 Build & Push Docker Image (M2 Mac + AKS Compatible)
+
+Build a multi-architecture image (ARM64 for local M2 Mac, AMD64 for AKS) and push to ACR:
+```bash
+version="1.0.4"
+export GH_OWNER=dotnetmicroservice001
+export GH_PAT="ghp_YourRealPATHere"
+export acrname="playeconomy01acr"
+az acr login --name $acrname
+docker buildx build \
+  --platform linux/amd64 \
+  --secret id=GH_OWNER --secret id=GH_PAT \
+  -t "$acrname.azurecr.io/play.inventory:$version" \
+  --push .
 ```
 
 ## Create Kubernetes namespace
