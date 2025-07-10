@@ -69,7 +69,7 @@ jobs:
         secrets: |
           GH_OWNER=${{ github.repository_owner }}
           GH_PAT=${{ secrets.GH_PAT }}
-        tags: "${{ env.ACR_NAME }}.azurecr.io/play.identity:${{ needs.generate-version.outputs.new-version }}"
+        tags: "${{ env.ACR_NAME }}.azurecr.io/play.inventory:${{ needs.generate-version.outputs.new-version }}"
   
 
 
