@@ -68,12 +68,12 @@ Build a multi-architecture image (ARM64 for local M2 Mac, AMD64 for AKS) and pus
 version="1.0.4"
 export GH_OWNER=dotnetmicroservice001
 export GH_PAT="ghp_YourRealPATHere"
-export acrname="playeconomy01acr"
-az acr login --name $acrname
+export appname="playeconomyapp"
+az acr login --name $appname
 docker buildx build \
   --platform linux/amd64 \
   --secret id=GH_OWNER --secret id=GH_PAT \
-  -t "$acrname.azurecr.io/play.inventory:$version" \
+  -t "$appname.azurecr.io/play.inventory:$version" \
   --push .
 ```
 
@@ -90,7 +90,7 @@ kubectl apply -f ./kubernetes/${namespace}.yaml -n "$namespace"
 
 ## Creating Azure Managed Identity and granting it access to Key Vault Store
 ```bash
-export appname=playeconomy-01
+export appname=playeconomyapp
 az identity create --resource-group $appname --name $namespace 
 
 export IDENTITY_CLIENT_ID=$(az identity show -g "$appname" -n "$namespace" --query clientId -o tsv)
