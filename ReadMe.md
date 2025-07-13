@@ -34,7 +34,6 @@ dotnet nuget push ../Packages/Play.Inventory.Contracts.$version.nupkg --api-key 
 
 ## Build a Docker Image
 ```bash
-export version="1.0.4"
 export GH_OWNER=dotnetmicroservice001
 export GH_PAT="ghp_YourRealPATHere"
 export appname="playeconomy-01"
@@ -65,7 +64,7 @@ docker push "$acrname.azurecr.io/play.inventory:$version"
 
 Build a multi-architecture image (ARM64 for local M2 Mac, AMD64 for AKS) and push to ACR:
 ```bash
-version="1.0.4"
+version="1.0.5"
 export GH_OWNER=dotnetmicroservice001
 export GH_PAT="ghp_YourRealPATHere"
 export appname="playeconomyapp"
@@ -111,10 +110,15 @@ az identity federated-credential create --name ${namespace} --identity-name "${n
 ## install helm chart
 ```bash 
 helmUser="00000000-0000-0000-0000-000000000000"
-helmPassword=$(az acr login --name playeconomy01acr --expose-token --output tsv --query accessToken)
-helm registry login playeconomy01acr.azurecr.io --username $helmUser --password $helmPassword 
+helmPassword=$(az acr login --name $appname --expose-token --output tsv --query accessToken)
+helm registry login $appname.azurecr.io --username $helmUser --password $helmPassword 
 
 chartVersion="0.1.0"
-helm upgrade "$namespace-service" oci://playeconomy01acr.azurecr.io/helm/microservice --version $chartVersion -f ./helm/values.yaml -n $namespace --install
+helm upgrade "$namespace-service" oci://$appname.azurecr.io/helm/microservice --version $chartVersion -f ./helm/values.yaml -n $namespace --install
 ```
 ---
+## Required repository secrets for github workflow
+GH_PAT -> profile - settings - developer settings - PAT with repo and read access
+AZURE_CLIENT_ID -> from ad app registration
+AZURE_SUBSCIPRTION_ID -> from azure subscription portal
+AZURE_TENANT_ID -> from microsoft entra id
