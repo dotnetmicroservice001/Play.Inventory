@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using Play.Common;
 using Play.Inventory.Contracts;
 using Play.Inventory.Service.Entities;
@@ -13,18 +14,26 @@ public class GrantItemsConsumer :IConsumer<GrantItems>
     
     private readonly IRepository<InventoryItem> _inventoryItemsRepository;
     private readonly IRepository<CatalogItem> _catalogItemsRepository;
+    private readonly ILogger<GrantItems> _logger;
 
-    public GrantItemsConsumer(IRepository<InventoryItem> inventoryItemsRepository,
-        IRepository<CatalogItem> catalogItemsRepository)
+    public GrantItemsConsumer(
+        IRepository<InventoryItem> inventoryItemsRepository,
+        IRepository<CatalogItem> catalogItemsRepository, 
+        ILogger<GrantItems> logger)
     {
         _inventoryItemsRepository = inventoryItemsRepository;
         _catalogItemsRepository = catalogItemsRepository;
+        _logger = logger;
     }
     
     
     public async Task Consume(ConsumeContext<GrantItems> context)
     {
         var message = context.Message;
+        _logger.LogInformation("Received GrantItems message with id: {CorrelationId} for " +
+                               "catalog item {CatalogItemId} for user {UserId} with quantity {Quantity}",
+            message.CorrelationId, message.CatalogItemId,
+            message.UserId, message.Quantity);
         
         // make sure item exists in database 
         var item = await _catalogItemsRepository.GetAsync(message.CatalogItemId);
