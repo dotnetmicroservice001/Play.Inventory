@@ -14,12 +14,12 @@ public class GrantItemsConsumer :IConsumer<GrantItems>
     
     private readonly IRepository<InventoryItem> _inventoryItemsRepository;
     private readonly IRepository<CatalogItem> _catalogItemsRepository;
-    private readonly ILogger<GrantItems> _logger;
+    private readonly ILogger<GrantItemsConsumer> _logger;
 
     public GrantItemsConsumer(
         IRepository<InventoryItem> inventoryItemsRepository,
         IRepository<CatalogItem> catalogItemsRepository, 
-        ILogger<GrantItems> logger)
+        ILogger<GrantItemsConsumer> logger)
     {
         _inventoryItemsRepository = inventoryItemsRepository;
         _catalogItemsRepository = catalogItemsRepository;

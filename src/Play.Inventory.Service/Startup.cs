@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Play.Common.HealthChecks;
 using Play.Common.Identity;
+using Play.Common.Logging;
 using Play.Common.MassTransit;
 using Play.Common.MongoDB;
 using Play.Inventory.Service.Clients;
@@ -48,7 +49,7 @@ namespace Play.Inventory.Service
                 .AddJwtBearer(); 
             
             AddCatalogClient(services);
-            
+            services.AddSeqLogging(Configuration);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

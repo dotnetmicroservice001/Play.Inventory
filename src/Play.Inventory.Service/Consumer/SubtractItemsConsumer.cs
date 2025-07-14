@@ -13,11 +13,11 @@ public class SubtractItemsConsumer : IConsumer<SubtractItems>
 {
     private readonly IRepository<InventoryItem> _inventoryItemsRepository;
     private readonly IRepository<CatalogItem> _catalogItemsRepository;
-    private readonly ILogger<SubtractItems> _logger;
+    private readonly ILogger<SubtractItemsConsumer> _logger;
 
     public SubtractItemsConsumer(IRepository<InventoryItem> inventoryItemsRepository,
         IRepository<CatalogItem> catalogItemsRepository, 
-        ILogger<SubtractItems> logger)
+        ILogger<SubtractItemsConsumer> logger)
     {
         _inventoryItemsRepository = inventoryItemsRepository;
         _catalogItemsRepository = catalogItemsRepository;
