@@ -1,6 +1,6 @@
 using System;
 using System.Net.Http;
-using GreenPipes;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +17,7 @@ using Play.Inventory.Service.Clients;
 using Play.Inventory.Service.Entities;
 using Play.Inventory.Service.Exceptions;
 using Polly;
-using Polly.Timeout;
+
 
 namespace Play.Inventory.Service
 {
