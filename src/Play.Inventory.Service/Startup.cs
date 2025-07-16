@@ -13,6 +13,7 @@ using Play.Common.Identity;
 using Play.Common.Logging;
 using Play.Common.MassTransit;
 using Play.Common.MongoDB;
+using Play.Common.OpenTelemetry;
 using Play.Inventory.Service.Clients;
 using Play.Inventory.Service.Entities;
 using Play.Inventory.Service.Exceptions;
@@ -49,7 +50,10 @@ namespace Play.Inventory.Service
                 .AddJwtBearer(); 
             
             AddCatalogClient(services);
-            services.AddSeqLogging(Configuration);
+            
+            services.AddSeqLogging(Configuration)
+                .AddTracing(Configuration);
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
