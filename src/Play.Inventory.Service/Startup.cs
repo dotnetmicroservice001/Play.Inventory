@@ -78,7 +78,8 @@ namespace Play.Inventory.Service
                         .AllowAnyMethod();
                 });
             }
-
+            
+            app.UseOpenTelemetryPrometheusScrapingEndpoint();
             app.UseHttpsRedirection();
 
             app.UseRouting();
