@@ -52,7 +52,8 @@ namespace Play.Inventory.Service
             AddCatalogClient(services);
             
             services.AddSeqLogging(Configuration)
-                .AddTracing(Configuration);
+                .AddTracing(Configuration)
+                .AddMetrics(Configuration);
             
             services.AddControllers();
             services.AddSwaggerGen(c =>

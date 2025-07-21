@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Threading.Tasks;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Play.Common;
+using Play.Common.Settings;
 using Play.Inventory.Contracts;
 using Play.Inventory.Service.Entities;
 using Play.Inventory.Service.Exceptions;
@@ -15,8 +19,10 @@ public class GrantItemsConsumer :IConsumer<GrantItems>
     private readonly IRepository<InventoryItem> _inventoryItemsRepository;
     private readonly IRepository<CatalogItem> _catalogItemsRepository;
     private readonly ILogger<GrantItemsConsumer> _logger;
+    private readonly Counter<int> _itemsGrantedCounter;
 
     public GrantItemsConsumer(
+        IConfiguration configuration,
         IRepository<InventoryItem> inventoryItemsRepository,
         IRepository<CatalogItem> catalogItemsRepository, 
         ILogger<GrantItemsConsumer> logger)
@@ -24,6 +30,10 @@ public class GrantItemsConsumer :IConsumer<GrantItems>
         _inventoryItemsRepository = inventoryItemsRepository;
         _catalogItemsRepository = catalogItemsRepository;
         _logger = logger;
+        
+        var settings = configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
+        Meter meter = new(settings.ServiceName);
+        _itemsGrantedCounter = meter.CreateCounter<int>("ItemsGranted");
     }
     
     
@@ -72,6 +82,9 @@ public class GrantItemsConsumer :IConsumer<GrantItems>
             inventoryItem.Quantity += message.Quantity;
             inventoryItem.MessageIds.Add(context.MessageId.Value);
             await _inventoryItemsRepository.UpdateAsync(inventoryItem);
+            _itemsGrantedCounter.Add(1,
+                new KeyValuePair<string, object>(context.Message.CorrelationId.ToString(),
+                    context.Message.CorrelationId ));
         }
         // send an event that inventory item has been granted
         var itemsGrantedTask = context.Publish(new InventoryItemsGranted(message.CorrelationId));
