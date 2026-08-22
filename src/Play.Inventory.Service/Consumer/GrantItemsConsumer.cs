@@ -70,12 +70,14 @@ public class GrantItemsConsumer :IConsumer<GrantItems>
             }; 
             inventoryItem.MessageIds.Add(context.MessageId.Value);
             await _inventoryItemsRepository.CreateAsync(inventoryItem);
+            _itemsGrantedCounter.Add(1,
+                new KeyValuePair<string, object>("ItemId", inventoryItem.CatalogItemID));
         }
         else
         {
             if (inventoryItem.MessageIds.Contains(context.MessageId.Value))
             {
-                await context.Publish(new InventoryItemsGranted(message.CorrelationId)); 
+                await context.Publish(new InventoryItemsGranted(message.CorrelationId));
                 return;
             }
             // if we have it, increase the amt
@@ -83,8 +85,7 @@ public class GrantItemsConsumer :IConsumer<GrantItems>
             inventoryItem.MessageIds.Add(context.MessageId.Value);
             await _inventoryItemsRepository.UpdateAsync(inventoryItem);
             _itemsGrantedCounter.Add(1,
-                new KeyValuePair<string, object>(context.Message.CorrelationId.ToString(),
-                    context.Message.CorrelationId ));
+                new KeyValuePair<string, object>("ItemId", inventoryItem.CatalogItemID));
         }
         // send an event that inventory item has been granted
         var itemsGrantedTask = context.Publish(new InventoryItemsGranted(message.CorrelationId));

@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Threading.Tasks;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Play.Common;
+using Play.Common.Settings;
 using Play.Inventory.Contracts;
 using Play.Inventory.Service.Entities;
 using Play.Inventory.Service.Exceptions;
@@ -14,14 +18,21 @@ public class SubtractItemsConsumer : IConsumer<SubtractItems>
     private readonly IRepository<InventoryItem> _inventoryItemsRepository;
     private readonly IRepository<CatalogItem> _catalogItemsRepository;
     private readonly ILogger<SubtractItemsConsumer> _logger;
+    private readonly Counter<int> _itemsSubtractedCounter;
 
-    public SubtractItemsConsumer(IRepository<InventoryItem> inventoryItemsRepository,
-        IRepository<CatalogItem> catalogItemsRepository, 
+    public SubtractItemsConsumer(
+        IConfiguration configuration,
+        IRepository<InventoryItem> inventoryItemsRepository,
+        IRepository<CatalogItem> catalogItemsRepository,
         ILogger<SubtractItemsConsumer> logger)
     {
         _inventoryItemsRepository = inventoryItemsRepository;
         _catalogItemsRepository = catalogItemsRepository;
         _logger = logger;
+
+        var settings = configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
+        Meter meter = new(settings.ServiceName);
+        _itemsSubtractedCounter = meter.CreateCounter<int>("ItemsSubtracted");
     }
     
     
@@ -55,8 +66,10 @@ public class SubtractItemsConsumer : IConsumer<SubtractItems>
             inventoryItem.Quantity -= message.Quantity;
             inventoryItem.MessageIds.Add(context.MessageId.Value);
             await _inventoryItemsRepository.UpdateAsync(inventoryItem);
-            
-            // publish inventory item is updated 
+            _itemsSubtractedCounter.Add(1,
+                new KeyValuePair<string, object>("ItemId", inventoryItem.CatalogItemID));
+
+            // publish inventory item is updated
             await context.Publish(new InventoryItemUpdated(
                 inventoryItem.UserId,
                 inventoryItem.CatalogItemID,
