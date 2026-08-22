@@ -17,10 +17,10 @@ container:
 
 resources:
   requests:
-    memory: "190Mi"
+    memory: "150Mi"
     cpu: "20m"
   limits:
-    memory: "256Mi"
+    memory: "180Mi"
     cpu: "100m"
 
 identityClientId: b96b2764-330d-4616-b8c7-1705acb8f0c3
