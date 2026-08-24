@@ -6,7 +6,7 @@ using Play.Inventory.Service.Entities;
 
 namespace Play.Inventory.Service.Consumer;
 
-public class CatalogItemUpdatedConsumer : IConsumer<CatalogItemCreated>
+public class CatalogItemUpdatedConsumer : IConsumer<CatalogItemUpdated>
 {
     private readonly IRepository<CatalogItem> _catalogItemRepository;
 
@@ -14,8 +14,8 @@ public class CatalogItemUpdatedConsumer : IConsumer<CatalogItemCreated>
     {
         _catalogItemRepository = catalogItemRepository;
     }
-    
-    public async Task Consume(ConsumeContext<CatalogItemCreated> context)
+
+    public async Task Consume(ConsumeContext<CatalogItemUpdated> context)
     {
         var message = context.Message;
         // checks to see if the item with the ID already exists, 
