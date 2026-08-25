@@ -29,12 +29,14 @@ public class CatalogItemUpdatedConsumer : IConsumer<CatalogItemUpdated>
             {
                 Id = message.ItemId,
                 Name = message.ItemName,
-                Description = message.Description
+                Description = message.Description,
+                ImageUrl = message.ImageUrl
             };
         }
         //otherwise we update
         item.Name = message.ItemName;
         item.Description = message.Description;
-        await _catalogItemRepository.UpdateAsync(item); 
+        item.ImageUrl = message.ImageUrl;
+        await _catalogItemRepository.UpdateAsync(item);
     }
 }
