@@ -30,13 +30,17 @@ public class CatalogItemUpdatedConsumer : IConsumer<CatalogItemUpdated>
                 Id = message.ItemId,
                 Name = message.ItemName,
                 Description = message.Description,
-                ImageUrl = message.ImageUrl
+                ImageUrl = message.ImageUrl,
+                Category = message.Category,
+                Rarity = message.Rarity
             };
         }
         //otherwise we update
         item.Name = message.ItemName;
         item.Description = message.Description;
         item.ImageUrl = message.ImageUrl;
+        item.Category = message.Category;
+        item.Rarity = message.Rarity;
         await _catalogItemRepository.UpdateAsync(item);
     }
 }

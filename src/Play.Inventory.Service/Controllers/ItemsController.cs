@@ -66,7 +66,7 @@ public class ItemsController : ControllerBase
         {
             var catalogItem = catalogItemEntities.Single(
                 catalogItem => catalogItem.Id == inventoryItem.CatalogItemID);
-            return inventoryItem.AsDto(catalogItem.Name, catalogItem.Description, catalogItem.ImageUrl);
+            return inventoryItem.AsDto(catalogItem.Name, catalogItem.Description, catalogItem.ImageUrl, catalogItem.Category, catalogItem.Rarity);
         }); 
         // wrapped in a action result with the item 
         return Ok(inventoryItemDtos);   
