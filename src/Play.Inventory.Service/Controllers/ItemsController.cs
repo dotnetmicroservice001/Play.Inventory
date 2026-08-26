@@ -62,12 +62,12 @@ public class ItemsController : ControllerBase
         var catalogItemEntities = await _catalogItemsRepository
                                 .GetAllAsync( item => itemIds.Contains(item.Id));
         
-        var inventoryItemDtos = inventoryItemEntities.Select(inventoryItem =>
-        {
-            var catalogItem = catalogItemEntities.Single(
-                catalogItem => catalogItem.Id == inventoryItem.CatalogItemID);
-            return inventoryItem.AsDto(catalogItem.Name, catalogItem.Description, catalogItem.ImageUrl, catalogItem.Category, catalogItem.Rarity);
-        }); 
+        var inventoryItemDtos = inventoryItemEntities
+            .Select(inventoryItem => (inventoryItem, catalogItem: catalogItemEntities.SingleOrDefault(
+                catalogItem => catalogItem.Id == inventoryItem.CatalogItemID)))
+            // catalogItem can be missing if the catalog item was removed or its sync hasn't caught up yet
+            .Where(pair => pair.catalogItem != null)
+            .Select(pair => pair.inventoryItem.AsDto(pair.catalogItem.Name, pair.catalogItem.Description, pair.catalogItem.ImageUrl, pair.catalogItem.Category, pair.catalogItem.Rarity));
         // wrapped in a action result with the item 
         return Ok(inventoryItemDtos);   
     }
